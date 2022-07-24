@@ -9,8 +9,6 @@
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
-#include <proto_print.h>
-
 #include <pb_messaging/adapters/adapter.h>
 
 namespace pb_messaging {
@@ -20,8 +18,8 @@ template<typename T> class pipe_producer;
 template<typename T> class pipe_consumer;
 
 template<typename T>
-class pipe_producer_daemon
-    : public producer_daemon<T>
+class pipe_producer_daemon :
+    public producer_daemon<T>
 {
 private:
     std::ofstream &pipe_stream;
@@ -55,8 +53,8 @@ public:
 };
 
 template<typename T>
-class pipe_consumer_daemon
-    : public consumer_daemon<T>
+class pipe_consumer_daemon :
+    public consumer_daemon<T>
 {
 private:
     google::protobuf::io::CodedInputStream &coded_in;
@@ -91,8 +89,8 @@ public:
 };
 
 template<typename T>
-class pipe_producer
-    : public producer<T>
+class pipe_producer :
+    public producer<T>
 {
 private:
     std::ofstream pipe_stream;
@@ -112,8 +110,8 @@ public:
 };
 
 template<typename T>
-class pipe_consumer
-    : public consumer<T>
+class pipe_consumer :
+    public consumer<T>
 {
 private:
     std::ifstream pipe_stream;
