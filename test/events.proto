@@ -1,0 +1,11 @@
+syntax = "proto3";
+package events;
+
+option java_package = "com.event.generic.protos";
+option java_outer_classname = "EventProtos";
+
+message simple_event {
+    uint64 st = 1;
+    uint64 et = 2;
+    float payload = 3;
+}
