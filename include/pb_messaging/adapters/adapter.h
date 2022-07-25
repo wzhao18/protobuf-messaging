@@ -106,8 +106,8 @@ protected:
     }
 
 public:
-    adapter() :
-        _queue(1000)
+    adapter(uint32_t buf_size) :
+        _queue(buf_size)
     {}
 
     ~adapter()
@@ -121,7 +121,9 @@ class producer :
     public adapter<T>
 {
 public:
-    producer(){}
+    producer(uint32_t buf_size) :
+        adapter<T>(buf_size)
+    {}
     ~producer(){}
 
     void produce(T &t)
@@ -135,7 +137,9 @@ class consumer :
     public adapter<T>
 {
 public:
-    consumer(){}
+    consumer(uint32_t buf_size) :
+        adapter<T>(buf_size)
+    {}
     ~consumer(){}
 
     void consume(T &t)

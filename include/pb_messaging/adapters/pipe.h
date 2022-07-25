@@ -96,8 +96,8 @@ private:
     std::ofstream pipe_stream;
 
 public:
-    pipe_producer(std::string pipe_path) :
-        producer<T>(),
+    pipe_producer(std::string pipe_path, uint32_t buf_size = 4096) :
+        producer<T>(buf_size),
         pipe_stream(pipe_path, std::ios_base::out |  std::ios_base::binary)
     {
         this->start_daemon(std::make_shared<std::thread>(pipe_producer_daemon<T>(this, pipe_stream)));
@@ -118,8 +118,8 @@ private:
     google::protobuf::io::IstreamInputStream raw_in;
     google::protobuf::io::CodedInputStream coded_in;
 public:
-    pipe_consumer(std::string pipe_path) :
-        consumer<T>(),
+    pipe_consumer(std::string pipe_path, uint32_t buf_size = 4096) :
+        consumer<T>(buf_size),
         pipe_stream(pipe_path, std::ios_base::in | std::ios_base::binary),
         raw_in(&pipe_stream),
         coded_in(&raw_in)

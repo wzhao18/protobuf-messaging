@@ -82,8 +82,8 @@ private:
     tcp::endpoint endpoint;
     socket::message_server<T> sock_server;
 public:
-    socket_producer(uint32_t port) :
-        producer<T>(),
+    socket_producer(uint32_t port, uint32_t buf_size = 4096) :
+        producer<T>(buf_size),
         endpoint(tcp::v4(), port),
         sock_server(io_context, endpoint)
     {
@@ -109,8 +109,8 @@ private:
     tcp::resolver::results_type endpoints;
     socket::message_client<T> sock_client;
 public:
-    socket_consumer(uint32_t port) :
-        consumer<T>(),
+    socket_consumer(uint32_t port, uint32_t buf_size = 4096) :
+        consumer<T>(buf_size),
         resolver(io_context),
         endpoints(resolver.resolve("localhost", std::to_string(port))),
         sock_client(io_context, endpoints)

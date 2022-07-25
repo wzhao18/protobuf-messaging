@@ -6,16 +6,17 @@
 #include <filesystem>
 #include <thread>
 
-#include <events.pb.h>
-
-#include <proto_print.h>
 #include <pb_messaging/adapters/pipe.h>
 
-#define num_runs 10000
+#include <events.pb.h>
+#include <test_base.h>
+
+#define num_runs 100000
+#define buf_size 4096
 
 void pipe_prod_func(std::string pipe_path)
 {
-    pb_messaging::adapter::pipe_producer<events::simple_event> pipe_producer(pipe_path);
+    pb_messaging::adapter::pipe_producer<events::simple_event> pipe_producer(pipe_path, buf_size);
 
     events::simple_event event;
     for (size_t i = 0; i < num_runs; i++) {
@@ -28,7 +29,7 @@ void pipe_prod_func(std::string pipe_path)
 
 void pipe_cons_func(std::string pipe_path)
 {   
-    pb_messaging::adapter::pipe_consumer<events::simple_event> pipe_consumer(pipe_path);
+    pb_messaging::adapter::pipe_consumer<events::simple_event> pipe_consumer(pipe_path, buf_size);
 
     events::simple_event event;
 
@@ -40,7 +41,7 @@ void pipe_cons_func(std::string pipe_path)
     }
 }
 
-void test_pipe() {
+void test_pipe_adapter() {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     auto pipe_path = std::filesystem::current_path() / "pipe";
@@ -59,3 +60,4 @@ void test_pipe() {
 }
 
 #undef num_runs
+#undef buf_size

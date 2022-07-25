@@ -5,10 +5,10 @@
 
 #include <boost/interprocess/mapped_region.hpp>
 
+#define PAGE_SIZE boost::interprocess::mapped_region::get_page_size()
+
 namespace pb_messaging {
 namespace socket {
-
-#define PAGE_SIZE boost::interprocess::mapped_region::get_page_size()
 
 class sock_buffer
 {
@@ -22,52 +22,33 @@ public:
         buf((uint8_t*) aligned_alloc(PAGE_SIZE, _volumn)),
         _size(0)
     {}
+    ~sock_buffer(){}
 
-    int64_t size()
-    {
-        return _size;
-    }
+    /* Get the current size of the buffer in bytes */
+    int64_t size();
 
-    int64_t volumn()
-    {
-        return _volumn;
-    }
+    /* Get the volumn of the buffer in bytes */
+    int64_t volumn();
 
-    int64_t remain()
-    {
-        return _volumn - _size;
-    }
+    /* Get the remaining bytes of the buffer */
+    int64_t remain();
 
-    bool consume(int64_t bytes_consumed)
-    {
-        if (_size < bytes_consumed)
-            return false;
+    /* Write to the buffer */
+    void write(int64_t);
 
-        uint8_t* start = buf.get();
-        memcpy(start, start + bytes_consumed, _size - bytes_consumed);
-        _size -= bytes_consumed;
-        return true;
-    }
+    /* Consume from the buffer and free up space */
+    bool consume(int64_t);
 
-    void write(int64_t bytes_written)
-    {
-        _size += bytes_written;
-    }
+    /* get the raw pointer to the begin of buffer */
+    uint8_t* raw();
 
-    uint8_t* raw()
-    {
-        return buf.get();
-    }
-
-    uint8_t* raw_curr()
-    {
-        return buf.get() + _size;
-    }
+    /* get the raw pointer to the current writable region of buffer */
+    uint8_t* raw_curr();
 };
 
-#undef PAGE_SIZE
+}
+}
 
-}
-}
+#undef PAGE_SIZE
 
 #endif // PB_MESSAGING_SOCKET_SOCK_BUFFER

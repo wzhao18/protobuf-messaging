@@ -4,13 +4,14 @@
 
 #include <boost/asio.hpp>
 
-#include <events.pb.h>
-
-#include <proto_print.h>
 #include <pb_messaging/adapters/socket.h>
 
-#define num_runs 10000
+#include <events.pb.h>
+#include <test_base.h>
+
+#define num_runs 100000
 #define port 33450
+#define buf_size 4096
 
 using boost::asio::ip::tcp;
 
@@ -18,7 +19,7 @@ std::atomic<bool> finished = false;
 
 void socket_prod_func()
 {
-    pb_messaging::adapter::socket_producer<events::simple_event> socket_producer(port);
+    pb_messaging::adapter::socket_producer<events::simple_event> socket_producer(port, buf_size);
 
     events::simple_event event;
     for (size_t i = 0; i < num_runs; i++) {
@@ -37,7 +38,7 @@ void socket_prod_func()
 void socket_cons_func()
 {
     {
-        pb_messaging::adapter::socket_consumer<events::simple_event> socket_consumer(port);
+        pb_messaging::adapter::socket_consumer<events::simple_event> socket_consumer(port, buf_size);
 
         events::simple_event event;
         for (size_t i = 0; i < num_runs; i++) {
@@ -51,7 +52,7 @@ void socket_cons_func()
     finished = true;
 }
 
-void test_socket() {
+void test_socket_adapter() {
     GOOGLE_PROTOBUF_VERIFY_VERSION;
 
     std::thread producer_t(socket_prod_func);
@@ -65,3 +66,4 @@ void test_socket() {
 
 #undef num_runs
 #undef port
+#undef buf_size
