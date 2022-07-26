@@ -11,6 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Boost CONFIG REQUIRED)
 find_package(protobuf CONFIG REQUIRED)
+find_package(RdKafka CONFIG REQUIRED)
 
 if(protobuf_VERBOSE)
   message(STATUS "Using Protocol Buffers ${protobuf_VERSION}")

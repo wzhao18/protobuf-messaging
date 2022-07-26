@@ -1,5 +1,6 @@
 set(SRC_FILES
     socket/sock_buffer.cpp
+    kafka/handler.cpp
 )
 
 add_library(pb_messaging STATIC ${SRC_FILES})
