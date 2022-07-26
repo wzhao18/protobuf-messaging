@@ -32,7 +32,7 @@ public:
     {
         T t;
         while (this->run()) {
-            if (this->wait_dequeue_timed(t, std::chrono::milliseconds(5))) {
+            while (this->try_dequeue(t)) {
                 sock_server.send(t);
             }
         }

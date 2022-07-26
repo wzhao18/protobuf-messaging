@@ -63,7 +63,7 @@ public:
     {
         T t;
         while (this->run()) {
-            if (this->wait_dequeue_timed(t, std::chrono::milliseconds(5))) {
+            if (this->try_dequeue(t)) {
                 publish(t);
             }
         }

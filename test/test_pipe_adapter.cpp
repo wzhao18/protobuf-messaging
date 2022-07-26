@@ -32,7 +32,6 @@ void pipe_cons_func(std::string pipe_path)
     pb_messaging::adapter::pipe_consumer<events::simple_event> pipe_consumer(pipe_path, buf_size);
 
     events::simple_event event;
-
     for (size_t i = 0; i < num_runs; i++) {
         pipe_consumer.consume(event);
         EXPECT_EQ(event.st(), i);

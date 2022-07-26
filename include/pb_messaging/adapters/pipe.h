@@ -24,6 +24,13 @@ class pipe_producer_daemon :
 private:
     std::ofstream &pipe_stream;
 
+    void publish(T &t)
+    {
+        if (!google::protobuf::util::SerializeDelimitedToOstream(t, &pipe_stream)) {
+            std::cerr << "Fail to serialize data into output stream" << std::endl;
+        }
+    }
+
 public:
     pipe_producer_daemon(pipe_producer<T> *_producer, std::ofstream &pipe_stream) :
         producer_daemon<T>(_producer),
@@ -35,19 +42,13 @@ public:
     {
         T t;
         while (this->run()) {
-            if (this->wait_dequeue_timed(t, std::chrono::milliseconds(5))) {
-                if (!google::protobuf::util::SerializeDelimitedToOstream(t, &pipe_stream)) {
-                    std::cerr << "Fail to serialize data into output stream" << std::endl;
-                    return;
-                }
+            while (this->try_dequeue(t)) {
+                publish(t);
             }
         }
 
         while (this->try_dequeue(t)) {
-            if (!google::protobuf::util::SerializeDelimitedToOstream(t, &pipe_stream)) {
-                std::cerr << "Fail to serialize data into output stream" << std::endl;
-                return;
-            }
+            publish(t);
         }
     }
 };

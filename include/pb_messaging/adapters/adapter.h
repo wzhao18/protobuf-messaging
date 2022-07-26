@@ -10,6 +10,8 @@
 #include <readerwritercircularbuffer.h>
 #include <google/protobuf/util/delimited_message_util.h>
 
+#include <pb_messaging/util/perf_monitor.h>
+
 namespace pb_messaging {
 namespace adapter {
 
@@ -39,19 +41,21 @@ public:
 };
 
 template<typename T>
-class producer_daemon
-    : public adapter_daemon<T>
+class producer_daemon :
+    public adapter_daemon<T>
 {
 protected:
-    template<class Rep, class Period>
-    bool wait_dequeue_timed(T &t, const std::chrono::duration<Rep, Period>& duration)
-    {
-        return this->_adapter->_queue.wait_dequeue_timed(t, duration);
-    }
-
     bool try_dequeue(T &t)
     {
-        return this->_adapter->_queue.try_dequeue(t);
+        bool success = this->_adapter->_queue.try_dequeue(t);
+
+#ifdef ENABLE_MONITORING
+        if (success) {
+            this->_adapter->_cnt++;
+            this->_adapter->_bytes += t.ByteSizeLong();
+        }
+#endif
+        return success;
     }
 
 public:
@@ -69,7 +73,16 @@ protected:
     template<class Rep, class Period>
     bool wait_enqueue_timed(T &t, const std::chrono::duration<Rep, Period>& duration)
     {
-        return this->_adapter->_queue.wait_enqueue_timed(t, duration);
+        bool success = this->_adapter->_queue.wait_enqueue_timed(t, duration);
+
+#ifdef ENABLE_MONITORING
+        if (success) {
+            this->_adapter->_cnt++;
+            this->_adapter->_bytes += t.ByteSizeLong();
+        }
+#endif
+
+        return success;
     }
 
 public:
@@ -80,13 +93,15 @@ public:
 };
 
 template<typename T>
-class adapter
+class adapter :
+   public util::perf_monitor_target
 {
 friend class adapter_daemon<T>;
 friend class producer_daemon<T>;
 friend class consumer_daemon<T>;
 private:
     std::shared_ptr<std::thread> daemon_t;
+    bool enable_monitor;
 
 protected:
     moodycamel::BlockingReaderWriterCircularBuffer<T> _queue;
@@ -108,7 +123,11 @@ protected:
 public:
     adapter(uint32_t buf_size) :
         _queue(buf_size)
-    {}
+    {
+#ifdef ENABLE_MONITORING
+        this->start_monitor();
+#endif
+    }
 
     ~adapter()
     {
