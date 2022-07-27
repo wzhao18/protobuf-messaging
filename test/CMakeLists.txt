@@ -11,7 +11,7 @@ file(GLOB TEST_SRC_FILES
 
 add_executable(pb_messaging_test ${TEST_SRC_FILES})
 target_link_libraries(pb_messaging_test pb_messaging gtest_main protobuf::libprotobuf rdkafka rdkafka++)
-#target_compile_definitions(pb_messaging_test PRIVATE ENABLE_MONITORING=1)
+target_compile_definitions(pb_messaging_test PRIVATE ENABLE_MONITORING)
 
 set(_protobuf_include_path -I ${Protobuf_IMPORT_DIRS})
 protobuf_generate(TARGET pb_messaging_test LANGUAGE cpp PROTOS ${PROTO_FILES})

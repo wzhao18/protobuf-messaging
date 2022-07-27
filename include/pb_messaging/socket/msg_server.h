@@ -9,7 +9,7 @@
 #include <boost/asio.hpp>
 #include <google/protobuf/util/delimited_message_util.h>
 
-#include <pb_messaging/subscriber/subscriber.h>
+#include <pb_messaging/interface/subscriber.h>
 
 using boost::asio::ip::tcp;
 

@@ -22,6 +22,7 @@ add_subdirectory(third_party/googletest)
 include_directories(include third_party/readerwriterqueue ~/.local/include)
 
 add_subdirectory(src)
+add_subdirectory(benchmark)
 
 enable_testing()
 add_subdirectory(test)

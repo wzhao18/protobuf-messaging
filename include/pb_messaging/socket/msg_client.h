@@ -23,8 +23,8 @@ class message_client
 private:
     boost::asio::io_context& io_context_;
     tcp::socket socket_;
+    std::function<void(T&)> callback;
     sock_buffer buf;
-    std::function<void(T&)> callback = [](T&){};
 
     void async_connect(const tcp::resolver::results_type& endpoints)
     {
@@ -81,9 +81,10 @@ private:
     }
 
 public:
-    message_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints) :
+    message_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints, std::function<void(T&)> &callback) :
         io_context_(io_context),
         socket_(io_context),
+        callback(callback),
         buf(buf_size)
     {
         async_connect(endpoints);
