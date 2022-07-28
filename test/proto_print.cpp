@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <events.pb.h>
-#include <test_base.h>
+#include <proto_print.h>
 
 std::ostream& operator<< (std::ostream& out, events::simple_event const& event)
 {

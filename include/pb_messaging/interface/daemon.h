@@ -1,16 +1,8 @@
 #ifndef PB_MESSAGING_ADAPTER
 #define PB_MESSAGING_ADAPTER
 
-#include <fstream>
-#include <iostream>
-#include <string>
 #include <memory>
 #include <thread>
-
-#include <readerwritercircularbuffer.h>
-#include <google/protobuf/util/delimited_message_util.h>
-
-#include <pb_messaging/util/perf_monitor.h>
 
 namespace pb_messaging {
 namespace adapter {
